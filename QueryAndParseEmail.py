@@ -65,9 +65,19 @@ for i in ids:
 	author_lists = []
 
 	for header_tag in soup.findAll('h3'):
-	if len(header_sections) != len(body_sections):
 		paper_urls.append(header_tag.a['href'])
 		paper_titles.append(header_tag.a.font.contents[0])
 
-	for header_section in header_sections:
-		author_lists
+	for green_font_tag in soup.findAll("font", attrs={"color":"#006621"}):
+		author_lists.append(green_font_tag.contents[0])
+	
+	if len(paper_titles) != len(paper_urls) or len(paper_urls) != len(author_lists):
+		print("Error: mismatch in the size of paper_titles, paper_urls, and author_lists")
+		sys.exit()
+
+	text_to_write = ""
+	for i in range(len(paper_titles)):
+		text_to_write = text_to_write + "<" + paper_urls[i] + "|" + paper_titles[i] + ">\n" + author_lists[i] + "\n\n"
+
+
+

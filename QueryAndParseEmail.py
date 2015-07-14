@@ -60,8 +60,8 @@ for i in ids:
 			break
 
 	if(html_text == ""):
-		print("Error: could not find html text in email")
-		sys.exit()
+		print("Error: could not find html text, skipping this email.")
+		continue
 	
 	soup = BeautifulSoup.BeautifulSoup(html_text)
 
@@ -77,8 +77,8 @@ for i in ids:
 		author_lists.append(green_font_tag.contents[0])
 	
 	if len(paper_titles) != len(paper_urls) or len(paper_urls) != len(author_lists):
-		print("Error: mismatch in the size of paper_titles, paper_urls, and author_lists")
-		sys.exit()
+		print("Error: mismatch in the size of paper_titles, paper_urls, and author_lists. Skipping this email.")
+		continue
 
 	for ind in range(len(paper_titles)):
 		paper_titles[ind] = paper_titles[ind].replace("\r\n", "")

@@ -13,9 +13,9 @@
 import imaplib
 import email
 import re
-import datetime
 import sys
-from BeautifulSoup import BeautifulSoup
+import BeautifulSoup
+import json
 
 ## A text file with two lines: username and password
 f = open('creds.txt')
@@ -41,24 +41,29 @@ for i in ids:
 	result, data = mail.uid('fetch', i, '(RFC822)')
 	raw_email = data[0][1]
 	email_message = email.message_from_string(raw_email)
-	if email_message['subject'] != 'Scholar Alert - New citations to my articles':
+	
+	if not ("Scholar Alert" in email_message['subject']):
 		continue
 	
-    # The following snippet was originally derived from http://stackoverflow.com/a/1463144
-    count = 0
-    # Grab the first html part
-    charset = part.get_content_charset()
-    html_text = ""
+	subject_text = re.sub(r'^Re: ', '', email_message['subject'])
+	
+	# The following snippet was originally derived from http://stackoverflow.com/a/1463144
+	count = 0
+	# Grab the first html part
+	html_text = ""
 	for part in email_message.walk():
+		charset = part.get_content_charset()
 		if part.get_content_type() == 'text/html':
-			html_text = unicode(part.get_payload(decode=True), str(charset), "ignore").encode('utf8', 'replace')
+			html_text = unicode(part.get_payload(decode=True),
+								charset,
+								"replace")
 			break
 
 	if(html_text == ""):
 		print("Error: could not find html text in email")
 		sys.exit()
 	
-	soup = BeautifulSoup(html_text)
+	soup = BeautifulSoup.BeautifulSoup(html_text)
 
 	paper_titles = []
 	paper_urls = []
@@ -75,9 +80,21 @@ for i in ids:
 		print("Error: mismatch in the size of paper_titles, paper_urls, and author_lists")
 		sys.exit()
 
-	text_to_write = ""
+	for ind in range(len(paper_titles)):
+		paper_titles[ind] = paper_titles[ind].replace("\r\n", "")
+		paper_urls[ind] = paper_urls[ind].replace("\r\n", "")
+		author_lists[ind] = author_lists[ind].replace("\r\n", "")
+	
+	text_to_write = "*" + subject_text + "*\n"
 	for i in range(len(paper_titles)):
 		text_to_write = text_to_write + "<" + paper_urls[i] + "|" + paper_titles[i] + ">\n" + author_lists[i] + "\n\n"
 
+	data = {}
+	data['text'] = text_to_write
+	data['channel'] = "#slackbotdev"
+	data['username'] = "scholar-bot"
+	data['icon_emoji'] = ":fish:"
 
-
+	outfile = open("text" + str(i) + ".json", "w")
+	outfile.write(json.dumps(data))
+	outfile.close()

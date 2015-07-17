@@ -1,6 +1,6 @@
 #!/bin/bash
 slack_hook_url=`cat slack_hook_url.txt`
-ipython QueryAndParseEmail.py
+python QueryAndParseEmail.py
 
 if [ ls text*.json 1> /dev/null 2>&1 ]; then
 	echo "Could not find json files, perhaps there are no unread emails in the inbox?"

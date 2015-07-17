@@ -41,7 +41,8 @@ for i in ids:
 	result, data = mail.uid('fetch', i, '(RFC822)')
 	raw_email = data[0][1]
 	email_message = email.message_from_string(raw_email)
-	
+	if not "google" in email_message['From']:
+		continue
 	if not ("Scholar Alert" in email_message['subject']):
 		continue
 	

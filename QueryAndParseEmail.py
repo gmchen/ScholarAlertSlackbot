@@ -64,7 +64,7 @@ for i in ids:
 		print("Error: could not find html text, skipping this email.")
 		continue
 	
-	soup = BeautifulSoup.BeautifulSoup(html_text)
+	soup = BeautifulSoup.BeautifulSoup(html_text,convertEntities="html")
 
 	paper_titles = []
 	paper_urls = []

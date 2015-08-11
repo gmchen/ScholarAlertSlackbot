@@ -81,7 +81,12 @@ for i in ids:
 		paper_titles.append(paper_title)
 
 	for green_font_tag in soup.findAll("font", attrs={"color":"#006621"}):
-		author_lists.append(green_font_tag.contents[0])
+		authors = green_font_tag.contents[0]
+		if re.search("[A-Z]{4,}", authors):
+			def replacement(match):
+				return match.group(1).lower()
+			authors = re.sub("(?<=[A-Z])([^ ]+)", replacement, authors)
+		author_lists.append(authors)
 	
 	if len(paper_titles) != len(paper_urls) or len(paper_urls) != len(author_lists):
 		print("Error: mismatch in the size of paper_titles, paper_urls, and author_lists. Skipping this email.")

@@ -69,10 +69,16 @@ for i in ids:
 	paper_titles = []
 	paper_urls = []
 	author_lists = []
-
+	
 	for header_tag in soup.findAll('h3'):
 		paper_urls.append(header_tag.a['href'])
-		paper_titles.append(header_tag.a.font.contents[0])
+		paper_title = header_tag.a.font.contents[0]
+		if paper_title == paper_title.upper():
+			def replacement(match):
+				return match.group(1).lower()
+			paper_title = re.sub("(?<=[A-Z])([^ ]+)", replacement, paper_title)
+			
+		paper_titles.append(paper_title)
 
 	for green_font_tag in soup.findAll("font", attrs={"color":"#006621"}):
 		author_lists.append(green_font_tag.contents[0])
@@ -92,7 +98,7 @@ for i in ids:
 
 	data = {}
 	data['text'] = text_to_write
-	data['channel'] = "#slackbotdev"
+	data['channel'] = "#publications"
 	data['username'] = "scholar-bot"
 	data['icon_emoji'] = ":fish:"
 

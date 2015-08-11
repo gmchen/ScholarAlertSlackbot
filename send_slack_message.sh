@@ -1,4 +1,5 @@
 #!/bin/bash
+module load python/2.7
 slack_hook_url=`cat slack_hook_url.txt`
 python QueryAndParseEmail.py
 
